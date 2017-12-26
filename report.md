@@ -4,7 +4,6 @@
 Append the following commands to `~/.bashrc`
 
 ```
-alias initasc='
 if [ -z $ascinited ]; then
   # Intel MPI
   export MPI_HOME=/opt/intel/impi/5.0.2.044
@@ -12,15 +11,14 @@ if [ -z $ascinited ]; then
   export MANPATH=$MPI_HOME/man:$MANPATH
   # Intel C++ Compiler
   source /opt/intel/bin/compilervars.sh intel64
+  #VTune
+  source /opt/intel/vtune_amplifier_xe/amplxe-vars.sh
   # flag
   export ascinited=true
 fi
-'
 
-# just to make things easier.
-initasc
+
 ```
-Use Command `initasc` to initialize environment.
 
 ## X11 Forwording via SSH
 ssh with `-X` option.
@@ -41,7 +39,6 @@ Example: Execute `gnome-system-monitor` in remote shell.
 
 
 # Intel MPI
-Prerequisit: `initasc`
 
 ## Help
 
@@ -75,7 +72,7 @@ Refer to [PBS](#PBS)
 [PBS Arguments](https://wenku.baidu.com/view/625bcc4ea2161479171128c4.html)
 
 ## Template
-Prerequisit: `initasc`
+
 
 test.pbs
 ```
@@ -92,8 +89,8 @@ mpirun -np 4 ~/test/hello
 
 * -N  Job Name
 * -V: Pass env to nodes. (initasc)
-* -o: Standard Output path
-* -e: Error output Path
+* -o: Standard output path
+* -e: Error output path
 * -q: Queue to be put into. Default: batch
 * nodes: Node Num
 * ppn: Core Num per Node
@@ -111,3 +108,42 @@ mpirun -np 4 ~/test/hello
 `qorder $job1 $job2` switches order of two jobs
 
 `pbsnodes -a`
+
+
+# VTune
+
+
+## Documentation
+```
+cd /opt/intel/vtune_amplifier_xe/documentation/en
+firefox documentation_amplifier.htm
+```
+
+## Run VTune
+`amplxe-gui`
+
+## Notice
+
+VTune Remote Debug feature is broken now due to scp error (which might be caused by sharing home).
+
+To profile a program, an avaliable method is to `ssh -X` to the specified node and run `amplxe-gui` locally.
+
+
+### Quick start
+
+1. Prepare Binary
+ * Add `-g` option for debug symbol when compile with `mpicxx` or `mpicc`
+
+2. New Project
+  * Target system: Local
+  * Target type: Launch Application
+  * Application: binary_path_with_debug_symbol
+
+  OK
+
+3. New Analysis
+
+## Hardware Performance Analysis
+Prerequisit: `Current user belongs to vtune group.`
+
+New Analysis -> ...
